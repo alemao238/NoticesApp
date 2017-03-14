@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/list_padding">
+    <TextView
+        android:textAllCaps="true"
+        android:id="@+id/listitem_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="fdfds"/>
+
+    <TextView
+        android:layout_below="@id/listitem_content"
+        android:textAllCaps="false"
+        android:textColor="@color/colorAccent"
+        android:textStyle="italic"
+        android:layout_marginRight="10dp"
+        android:id="@+id/listitem_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="USER"
+        android:gravity="right"
+        android:layout_toLeftOf="@+id/textview_date"
+        android:layout_toStartOf="@+id/textview_date"
+        android:textSize="@dimen/text_sub_content"/>
+    <TextView
+        android:layout_below="@id/listitem_content"
+        android:textAllCaps="false"
+        android:textColor="@color/colorAccent"
+        android:textStyle="italic"
+        android:id="@+id/listitem_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:text="DATE"
+        android:textSize="@dimen/text_sub_content"/>
+</RelativeLayout>

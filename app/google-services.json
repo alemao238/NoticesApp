@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "342374996649",
+    "firebase_url": "https://noticesapp.firebaseio.com",
+    "project_id": "noticesapp",
+    "storage_bucket": "noticesapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:342374996649:android:89e3c87394a51c37",
+        "android_client_info": {
+          "package_name": "com.example.dione.retroottoskeletonapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "342374996649-mppf3so51ea1pf1481g0eda9atmm9ivo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dione.retroottoskeletonapp",
+            "certificate_hash": "a7d5d5f85dde5c2be7fc5c710220e3e40cabab50"
+          }
+        },
+        {
+          "client_id": "342374996649-9lnr8lc1s63oghkf6hfq2ck0mautnvmu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDntY-mTDr4ne4eM34sl2xUBNuQz-BiXnA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "342374996649-9lnr8lc1s63oghkf6hfq2ck0mautnvmu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
