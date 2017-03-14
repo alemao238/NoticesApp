@@ -189,9 +189,9 @@ public class DashboardActivity extends AppCompatActivity implements
         } else if (id == R.id.nav_settings) {
             openFragment(new SettingsFragment());
         } else if (id == R.id.nav_admins) {
-
+            openFragment(new AdminsFragment());
         } else if (id == R.id.nav_co_workers) {
-
+            openFragment(new CoWorkersFragment());
         } else if (id == R.id.nav_logout) {
             Toast.makeText(this, "See you later " + sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_DISPLAY_NAME, ""), Toast.LENGTH_LONG).show();
             startActivity(new Intent(this, LoginActivity.class));
