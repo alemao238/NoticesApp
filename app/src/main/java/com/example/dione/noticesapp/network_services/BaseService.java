@@ -23,7 +23,7 @@ public class BaseService {
     protected <T> void asyncRequest(Call<T> apiCall) {
         apiCall.enqueue(new Callback<T>() {
             @Override
-            public void onResponse(Call<T> call, Response<T> response) { 
+            public void onResponse(Call<T> call, Response<T> response) {
                 if (response.isSuccessful()) {
                     BusProvider.getInstance().post(response.body());
                 } else {

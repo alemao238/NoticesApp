@@ -1,9 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <ImageView
+        android:layout_margin="16dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:id="@+id/imageview_profile_image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@mipmap/ic_launcher"/>
+
+    <View
+        android:id="@+id/first_divider"
+        android:layout_below="@id/imageview_profile_image"
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:background="#c0c0c0"/>
+
+    <ImageView
+        android:padding="10dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="-30dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/first_divider"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/round_button"
+        android:gravity="center_vertical|center_horizontal"
+        android:src="@mipmap/ic_mode_edit_black_24dp"
+        android:textColor="#fff" />
+
     <TextView
+        android:textColor="@color/colorBlack"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_header"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="25dp"
+        android:layout_below="@id/first_divider"
+        android:id="@+id/textview_display_name_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Display Name"
+        android:gravity="center_horizontal"/>
+
+    <TextView
+        android:padding="3dp"
+        android:textSize="@dimen/text_content"
+        android:id="@+id/textview_display_name"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@id/textview_display_name_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Profile Fragment"/>
-</LinearLayout>
+        android:text="Dione Dave Llorera"/>
+
+    <TextView
+        android:textColor="@color/colorBlack"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_header"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@id/textview_display_name"
+        android:id="@+id/textview_email_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email"/>
+
+    <TextView
+        android:id="@+id/textview_email"
+        android:padding="3dp"
+        android:textSize="@dimen/text_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@id/textview_email_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Dione@tagcash.com"/>
+</RelativeLayout>
