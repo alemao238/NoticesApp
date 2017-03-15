@@ -13,6 +13,8 @@ import android.widget.Toast;
 
 import com.example.dione.noticesapp.R;
 import com.example.dione.noticesapp.bus.BusProvider;
+import com.example.dione.noticesapp.event.LoginRequestEvent;
+import com.example.dione.noticesapp.event.LoginResponseEvent;
 import com.example.dione.noticesapp.event.RegisterRequestEvent;
 import com.example.dione.noticesapp.event.RegisterResponseEvent;
 import com.example.dione.noticesapp.event.ErrorRequestEvent;
@@ -42,6 +44,8 @@ public class SignUpActivity extends AppCompatActivity implements FirebaseAuth.Au
     EditText displayName;
     @BindView(R.id.edittext_password)
     EditText password;
+    @BindView(R.id.edittext_username)
+    EditText username;
 
     @BindView(R.id.til_email)
     TextInputLayout tilEmail;
@@ -49,6 +53,8 @@ public class SignUpActivity extends AppCompatActivity implements FirebaseAuth.Au
     TextInputLayout tilPassword;
     @BindView(R.id.til_display_name)
     TextInputLayout tilDisplayName;
+    @BindView(R.id.til_username)
+    TextInputLayout tilUsername;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -77,32 +83,13 @@ public class SignUpActivity extends AppCompatActivity implements FirebaseAuth.Au
 
     private void sendRegister(String email, String password, String displayName){
         helpers.showProgressDialog(getString(R.string.loading_register));
-        BusProvider.getInstance().post(new RegisterRequestEvent(email, displayName, password));
+        BusProvider.getInstance().post(new RegisterRequestEvent(email, displayName, password, "http://www.example.com/12345678/photo.png", username.getText().toString()));
     }
 
     @Subscribe
     public void onReceiveRegisterResponse(RegisterResponseEvent registerResponseEvent) {
-        mAuth.signInWithEmailAndPassword(email.getText().toString().trim(), password.getText().toString().trim())
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (!task.isSuccessful()) {
-                            helpers.showToast(task.getException().getMessage());
-
-                        } else {
-                            helpers.showToast("Welcome " + task.getResult().getUser().getDisplayName());
-                            sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_DISPLAY_NAME, task.getResult().getUser().getDisplayName());
-                            sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_EMAIL, task.getResult().getUser().getEmail());
-                            sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_PHOTO_URL, task.getResult().getUser().getPhotoUrl().toString());
-                            Intent intent = new Intent(SignUpActivity.this, DashboardActivity.class);
-                            intent.putExtra("from_class", "login");
-                            startActivity(intent);
-                            finish();
-                        }
-                        helpers.closeProgressDialog();
-                    }
-                });
         helpers.showToast(getString(R.string.info_registration_success));
+        BusProvider.getInstance().post(new LoginRequestEvent("normal", username.getText().toString(), password.getText().toString()));
     }
 
     @Subscribe
@@ -118,7 +105,8 @@ public class SignUpActivity extends AppCompatActivity implements FirebaseAuth.Au
                 boolean isEmailValid = InputValidator.validate(this, email, tilEmail);
                 boolean isPasswordValid = InputValidator.validate(this, password, tilPassword);
                 boolean isDisplayNameValid = InputValidator.validate(this, displayName, tilDisplayName);
-                if (isEmailValid && isPasswordValid && isDisplayNameValid) {
+                boolean isUsernameValid = InputValidator.validate(this, username, tilUsername);
+                if (isEmailValid && isPasswordValid && isDisplayNameValid && isUsernameValid) {
                     sendRegister(email.getText().toString(), password.getText().toString(), displayName.getText().toString());
                 }
                 break;
@@ -138,6 +126,20 @@ public class SignUpActivity extends AppCompatActivity implements FirebaseAuth.Au
         if (mAuth != null) {
             mAuth.removeAuthStateListener(this);
         }
+    }
+
+    @Subscribe
+    public void onReceiveLoginResponseEvent(LoginResponseEvent loginResponseEvent) {
+        sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_DISPLAY_NAME, loginResponseEvent.getDisplayName());
+        sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_EMAIL, loginResponseEvent.getEmail());
+        sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_PHOTO_URL, "http://i1.wp.com/www.techrepublic.com/bundles/techrepubliccore/images/icons/standard/icon-user-default.png");
+        sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_USERNAME, loginResponseEvent.getUsername());
+        helpers.closeProgressDialog();
+        helpers.showToast(getString(R.string.info_login_success));
+        Intent intent = new Intent(SignUpActivity.this, DashboardActivity.class);
+        intent.putExtra("from_class", "login");
+        startActivity(intent);
+        finish();
     }
 
     @Override

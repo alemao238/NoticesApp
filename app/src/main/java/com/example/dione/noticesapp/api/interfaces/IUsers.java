@@ -1,7 +1,9 @@
 package com.example.dione.noticesapp.api.interfaces;
 
 import com.example.dione.noticesapp.api.models.Weather;
+import com.example.dione.noticesapp.event.LoginResponseEvent;
 import com.example.dione.noticesapp.event.RegisterResponseEvent;
+import com.example.dione.noticesapp.event.RegisterTokenResponseEvent;
 
 import java.util.Map;
 
@@ -19,4 +21,12 @@ public interface IUsers {
     @POST("user/create")
     @FormUrlEncoded
     Call<RegisterResponseEvent> registerUser(@FieldMap Map<String, String> values);
+
+    @POST("user/login")
+    @FormUrlEncoded
+    Call<LoginResponseEvent> loginUser(@FieldMap Map<String, String> values);
+
+    @POST("fcm/register")
+    @FormUrlEncoded
+    Call<RegisterTokenResponseEvent> registerToken(@FieldMap Map<String, String> values);
 }

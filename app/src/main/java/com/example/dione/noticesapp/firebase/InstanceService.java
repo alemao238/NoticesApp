@@ -2,6 +2,10 @@ package com.example.dione.noticesapp.firebase;
 
 import android.util.Log;
 
+import com.example.dione.noticesapp.bus.BusProvider;
+import com.example.dione.noticesapp.event.RegisterTokenRequestEvent;
+import com.example.dione.noticesapp.manager.SharedPreferenceManager;
+import com.example.dione.noticesapp.utilities.ApplicationConstants;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 /**
@@ -13,6 +17,7 @@ public class InstanceService extends com.google.firebase.iid.FirebaseInstanceIdS
     public void onTokenRefresh() {
         super.onTokenRefresh();
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d("REFRESHED_TOKEN", refreshedToken);
+        SharedPreferenceManager sharedPreferenceManager = new SharedPreferenceManager(this);
+        sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_REG_TOKEN, refreshedToken);
     }
 }

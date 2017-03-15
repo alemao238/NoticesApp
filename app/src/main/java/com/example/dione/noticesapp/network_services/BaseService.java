@@ -29,8 +29,8 @@ public class BaseService {
                 } else {
                     ErrorResponseEvent apiError = ErrorUtils.parseError(response);
                     String errorMessage = "";
-                    if (apiError.getErrorMessage().getMessage() != null) {
-                        errorMessage += apiError.getErrorMessage().getMessage();
+                    if (apiError.getErrorMessage() != null) {
+                        errorMessage += apiError.getErrorMessage();
                     }
                     BusProvider.getInstance().post(new ErrorRequestEvent(errorMessage));
 

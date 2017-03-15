@@ -8,11 +8,14 @@ public class RegisterRequestEvent {
     private String email;
     private String nickname;
     private String password;
-
-    public RegisterRequestEvent(String email, String nickname, String password){
+    private String photoUrl;
+    private String username;
+    public RegisterRequestEvent(String email, String nickname, String password, String photoUrl, String username){
         this.email = email;
         this.nickname = nickname;
         this.password = password;
+        this.photoUrl = photoUrl;
+        this.username = username;
     }
 
     public String getEmail() {
@@ -25,5 +28,13 @@ public class RegisterRequestEvent {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public String getUsername() {
+        return username;
     }
 }

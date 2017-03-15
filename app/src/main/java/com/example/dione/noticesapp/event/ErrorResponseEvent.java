@@ -11,42 +11,13 @@ public class ErrorResponseEvent {
 
     @SerializedName("errorMessage")
     @Expose
-    private ErrorMessage errorMessage;
+    private String errorMessage;
 
-    public ErrorMessage getErrorMessage() {
+    public String getErrorMessage() {
         return errorMessage;
     }
 
-    public void setErrorMessage(ErrorMessage errorMessage) {
+    public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
     }
-
-
-    public class ErrorMessage {
-
-        @SerializedName("code")
-        @Expose
-        private String code;
-        @SerializedName("message")
-        @Expose
-        private String message;
-
-        public String getCode() {
-            return code;
-        }
-
-        public void setCode(String code) {
-            this.code = code;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-
-    }
-
 }

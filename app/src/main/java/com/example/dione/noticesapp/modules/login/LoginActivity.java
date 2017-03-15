@@ -5,11 +5,17 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.dione.noticesapp.R;
+import com.example.dione.noticesapp.bus.BusProvider;
+import com.example.dione.noticesapp.event.ErrorRequestEvent;
+import com.example.dione.noticesapp.event.LoginRequestEvent;
+import com.example.dione.noticesapp.event.LoginResponseEvent;
+import com.example.dione.noticesapp.event.RegisterRequestEvent;
 import com.example.dione.noticesapp.manager.SharedPreferenceManager;
 import com.example.dione.noticesapp.modules.dashboard.DashboardActivity;
 import com.example.dione.noticesapp.modules.register.SignUpActivity;
@@ -20,6 +26,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.squareup.otto.Subscribe;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -69,29 +76,30 @@ public class LoginActivity extends AppCompatActivity implements FirebaseAuth.Aut
                 boolean isUsernameValid = InputValidator.validate(this, username, tilUsername);
                 boolean isPasswordValid = InputValidator.validate(this, password, tilPassword);
                 if (isUsernameValid && isPasswordValid) {
+                    BusProvider.getInstance().post(new LoginRequestEvent("normal", username.getText().toString(), password.getText().toString()));
                     helpers.showProgressDialog(getString(R.string.loading_login));
-                    mAuth.signInWithEmailAndPassword(username.getText().toString().trim(), password.getText().toString().trim())
-                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (!task.isSuccessful()) {
-                                        Toast.makeText(LoginActivity.this,task.getException().getMessage(),
-                                                Toast.LENGTH_SHORT).show();
-
-                                    } else {
-                                        Toast.makeText(LoginActivity.this,"Welcome " + task.getResult().getUser().getDisplayName(),
-                                                Toast.LENGTH_SHORT).show();
-                                        sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_DISPLAY_NAME, task.getResult().getUser().getDisplayName());
-                                        sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_EMAIL, task.getResult().getUser().getEmail());
-                                        sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_PHOTO_URL, task.getResult().getUser().getPhotoUrl().toString());
-                                        Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
-                                        intent.putExtra("from_class", "login");
-                                        startActivity(intent);
-                                        finish();
-                                    }
-                                    helpers.closeProgressDialog();
-                                }
-                            });
+//                    mAuth.signInWithEmailAndPassword(username.getText().toString().trim(), password.getText().toString().trim())
+//                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//                                @Override
+//                                public void onComplete(@NonNull Task<AuthResult> task) {
+//                                    if (!task.isSuccessful()) {
+//                                        Toast.makeText(LoginActivity.this,task.getException().getMessage(),
+//                                                Toast.LENGTH_SHORT).show();
+//
+//                                    } else {
+//                                        Toast.makeText(LoginActivity.this,"Welcome " + task.getResult().getUser().getDisplayName(),
+//                                                Toast.LENGTH_SHORT).show();
+//                                        sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_DISPLAY_NAME, task.getResult().getUser().getDisplayName());
+//                                        sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_EMAIL, task.getResult().getUser().getEmail());
+//                                        sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_PHOTO_URL, task.getResult().getUser().getPhotoUrl().toString());
+//                                        Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
+//                                        intent.putExtra("from_class", "login");
+//                                        startActivity(intent);
+//                                        finish();
+//                                    }
+//                                    helpers.closeProgressDialog();
+//                                }
+//                            });
                 }
                 break;
             default:
@@ -116,5 +124,37 @@ public class LoginActivity extends AppCompatActivity implements FirebaseAuth.Aut
         if (mAuth != null) {
             mAuth.removeAuthStateListener(this);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Subscribe
+    public void onReceiveLoginResponseEvent(LoginResponseEvent loginResponseEvent) {
+        sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_DISPLAY_NAME, loginResponseEvent.getDisplayName());
+        sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_EMAIL, loginResponseEvent.getEmail());
+        sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_PHOTO_URL, "http://i1.wp.com/www.techrepublic.com/bundles/techrepubliccore/images/icons/standard/icon-user-default.png");
+        sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_USERNAME, loginResponseEvent.getUsername());
+        helpers.closeProgressDialog();
+        helpers.showToast(getString(R.string.info_login_success));
+        Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
+        intent.putExtra("from_class", "login");
+        startActivity(intent);
+        finish();
+    }
+
+    @Subscribe
+    public void onReceiveRegisterErrorResponse(ErrorRequestEvent errorRequestEvent) {
+        helpers.showToast(errorRequestEvent.getpErrorMessage());
+        helpers.closeProgressDialog();
     }
 }

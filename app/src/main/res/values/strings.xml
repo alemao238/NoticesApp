@@ -51,5 +51,6 @@
     <string name="info_result_found">Result found</string>
     <string name="info_bye">See you later</string>
     <string name="info_registration_success">Registered successfully</string>
+    <string name="info_login_success">Login successfully</string>
     <!-- end toast strings -->
 </resources>

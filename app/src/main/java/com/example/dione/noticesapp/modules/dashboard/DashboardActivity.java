@@ -26,6 +26,8 @@ import android.widget.TextView;
 
 import com.example.dione.noticesapp.R;
 import com.example.dione.noticesapp.bus.BusProvider;
+import com.example.dione.noticesapp.event.RegisterResponseEvent;
+import com.example.dione.noticesapp.event.RegisterTokenRequestEvent;
 import com.example.dione.noticesapp.firebase.InstanceService;
 import com.example.dione.noticesapp.firebase.MessagingService;
 import com.example.dione.noticesapp.manager.SharedPreferenceManager;
@@ -39,6 +41,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
 
@@ -65,11 +68,8 @@ public class DashboardActivity extends AppCompatActivity implements
     DrawerLayout drawer;
     @BindView(R.id.nav_view)
     NavigationView navigationView;
-//    @BindView(R.id.navheader_name)
     TextView navHeaderName;
-//    @BindView(R.id.navheader_email)
     TextView navHeaderEmail;
-//    @BindView(R.id.navheader_image)
     ImageView navHeaderImage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,8 +87,15 @@ public class DashboardActivity extends AppCompatActivity implements
         helpers = new Helpers(this);
         bindDrawer();
         selectMenu(0, announcementsFragment);
+        Log.d("REFRESHED_TOKEN", "SHOULD START SERVICE");
         startService(new Intent(this, InstanceService.class));
         startService(new Intent(this, MessagingService.class));
+        if (!sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_REG_TOKEN, "").isEmpty()) {
+            BusProvider.getInstance().post(new RegisterTokenRequestEvent(sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_REG_TOKEN, ""),
+                    sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_USERNAME, ""),
+                    "normal"));
+        }
+
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             if (bundle.getString("from_class").equalsIgnoreCase("login")) {
@@ -299,5 +306,23 @@ public class DashboardActivity extends AppCompatActivity implements
     @Override
     public void onCancelled(DatabaseError databaseError) {
         Log.d("ERROR", databaseError.getMessage());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Subscribe
+    public void onReceiveRegisterErrorResponse(RegisterResponseEvent registerResponseEvent) {
+        helpers.showToast(registerResponseEvent.getStatus());
+        helpers.closeProgressDialog();
     }
 }

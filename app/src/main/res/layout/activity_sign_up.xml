@@ -66,6 +66,21 @@
             android:inputType="text"/>
     </android.support.design.widget.TextInputLayout>
 
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/input_padding"
+        android:id="@+id/til_username">
+        <EditText
+            android:drawableRight="@mipmap/ic_person_outline_black_24dp"
+            android:drawableEnd="@mipmap/ic_person_outline_black_24dp"
+            android:id="@+id/edittext_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_enter_username"
+            android:inputType="text"/>
+    </android.support.design.widget.TextInputLayout>
+
     <Button
         android:drawableRight="@mipmap/ic_done_black_24dp"
         android:drawableEnd="@mipmap/ic_done_black_24dp"
