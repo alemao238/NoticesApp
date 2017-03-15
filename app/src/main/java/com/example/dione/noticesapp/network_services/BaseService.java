@@ -23,8 +23,7 @@ public class BaseService {
     protected <T> void asyncRequest(Call<T> apiCall) {
         apiCall.enqueue(new Callback<T>() {
             @Override
-            public void onResponse(Call<T> call, Response<T> response) {
-                Log.d("ERROR_RESPONSE", String.valueOf(response.isSuccessful()));
+            public void onResponse(Call<T> call, Response<T> response) { 
                 if (response.isSuccessful()) {
                     BusProvider.getInstance().post(response.body());
                 } else {
@@ -33,7 +32,6 @@ public class BaseService {
                     if (apiError.getErrorMessage().getMessage() != null) {
                         errorMessage += apiError.getErrorMessage().getMessage();
                     }
-                    Log.d("ERROR_RESPONSE", apiError.getErrorMessage().getMessage());
                     BusProvider.getInstance().post(new ErrorRequestEvent(errorMessage));
 
                 }
@@ -41,8 +39,7 @@ public class BaseService {
 
             @Override
             public void onFailure(Call<T> call, Throwable t) {
-                Log.d("ERROR_RESPONSE", t.getLocalizedMessage());
-                BusProvider.getInstance().post(new ErrorRequestEvent(t.getLocalizedMessage()));
+                BusProvider.getInstance().post(new ErrorRequestEvent(t.getMessage()));
             }
         });
 
