@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.example.dione.noticesapp.modules.register.SignUpActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -20,5 +21,57 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/input_padding"
+        android:id="@+id/til_email">
+        <EditText
+            android:drawableRight="@mipmap/ic_mail_outline_black_24dp"
+            android:drawableEnd="@mipmap/ic_mail_outline_black_24dp"
+            android:id="@+id/edittext_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_enter_email"
+            android:inputType="textEmailAddress"/>
+    </android.support.design.widget.TextInputLayout>
 
-</android.support.design.widget.CoordinatorLayout>
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/input_padding"
+        android:id="@+id/til_password">
+        <EditText
+            android:drawableRight="@mipmap/ic_lock_outline_black_24dp"
+            android:drawableEnd="@mipmap/ic_lock_outline_black_24dp"
+            android:id="@+id/edittext_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_enter_password"
+            android:inputType="textPassword"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/input_padding"
+        android:id="@+id/til_display_name">
+        <EditText
+            android:drawableRight="@mipmap/ic_person_outline_black_24dp"
+            android:drawableEnd="@mipmap/ic_person_outline_black_24dp"
+            android:id="@+id/edittext_display_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_enter_display_name"
+            android:inputType="text"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:drawableRight="@mipmap/ic_done_black_24dp"
+        android:drawableEnd="@mipmap/ic_done_black_24dp"
+        android:id="@+id/button_register"
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Register"/>
+</LinearLayout>

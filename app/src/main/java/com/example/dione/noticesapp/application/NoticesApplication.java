@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.example.dione.noticesapp.bus.BusProvider;
 import com.example.dione.noticesapp.manager.NoticesManager;
+import com.example.dione.noticesapp.network_services.Services;
 import com.squareup.otto.Bus;
 
 /**
@@ -16,6 +17,7 @@ public class NoticesApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mNoticesManager = new NoticesManager(this, mBus);
+        new Services(this);
         mBus.register(mNoticesManager);
         mBus.register(this);
     }

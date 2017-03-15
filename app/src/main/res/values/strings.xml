@@ -26,6 +26,8 @@
     <!-- hint string -->
     <string name="hint_enter_password">Enter password</string>
     <string name="hint_enter_username">Enter username</string>
+    <string name="hint_enter_email">Enter email</string>
+    <string name="hint_enter_display_name">Enter display name</string>
     <!-- end hint string -->
 
     <!-- button texts strings -->
@@ -36,6 +38,7 @@
     <!-- loading strings -->
     <string name="loading_login">Requesting login, Please wait</string>
     <string name="loading_data">Loading data, Please wait.</string>
+    <string name="loading_register">Registering information, Please wait.</string>
     <!-- end loading strings -->
 
     <!-- menu strings -->
@@ -47,5 +50,6 @@
     <string name="info_exit_app">Please press back again to exit</string>
     <string name="info_result_found">Result found</string>
     <string name="info_bye">See you later</string>
+    <string name="info_registration_success">Registered successfully</string>
     <!-- end toast strings -->
 </resources>
