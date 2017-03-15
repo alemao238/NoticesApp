@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,7 +23,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.dione.noticesapp.R;
 import com.example.dione.noticesapp.bus.BusProvider;
@@ -33,6 +33,7 @@ import com.example.dione.noticesapp.modules.login.LoginActivity;
 import com.example.dione.noticesapp.modules.models.NoticesModel;
 import com.example.dione.noticesapp.modules.models.RefreshModel;
 import com.example.dione.noticesapp.utilities.ApplicationConstants;
+import com.example.dione.noticesapp.utilities.Helpers;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,6 +49,7 @@ import butterknife.ButterKnife;
 
 public class DashboardActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener, ValueEventListener {
+    private boolean doubleBackToExitPressedOnce = false;
     private BroadcastReceiver noticesReceiver;
     private NoticesModel noticesModel;
     private AnnouncementsFragment announcementsFragment;
@@ -56,6 +58,7 @@ public class DashboardActivity extends AppCompatActivity implements
     private ProgressDialog progressDialog;
     private SharedPreferenceManager sharedPreferenceManager;
     private DatabaseReference adminNoticeReference;
+    private Helpers helpers;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.drawer_layout)
@@ -81,6 +84,7 @@ public class DashboardActivity extends AppCompatActivity implements
         navHeaderImage = (ImageView) headerLayout.findViewById(R.id.navheader_image);
         announcementsFragment = new AnnouncementsFragment();
         sharedPreferenceManager = new SharedPreferenceManager(this);
+        helpers = new Helpers(this);
         bindDrawer();
         selectMenu(0, announcementsFragment);
         startService(new Intent(this, InstanceService.class));
@@ -114,7 +118,20 @@ public class DashboardActivity extends AppCompatActivity implements
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+                return;
+            }
+            doubleBackToExitPressedOnce = true;
+            helpers.showToast(getString(R.string.info_exit_app));
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce=false;
+                }
+            }, 2000);
+
+
         }
     }
 
@@ -127,7 +144,6 @@ public class DashboardActivity extends AppCompatActivity implements
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                //do search here
                 BusProvider.getInstance().post(new RefreshModel(true));
                 int searchCount = 0;
                 for (NoticesModel noticesModel : noticesModelArrayList) {
@@ -138,16 +154,15 @@ public class DashboardActivity extends AppCompatActivity implements
 
                 }
                 if (searchCount == 0) {
-                    Toast.makeText(DashboardActivity.this, "No result found", Toast.LENGTH_SHORT).show();
+                    helpers.showToast("No " + getString(R.string.info_result_found));
                 } else {
-                    Toast.makeText(DashboardActivity.this, searchCount +" results found", Toast.LENGTH_SHORT).show();
+                    helpers.showToast(searchCount + " " + getString(R.string.info_result_found));
                 }
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                //do search here if needed
                 if (newText.isEmpty()) {
                     BusProvider.getInstance().post(new RefreshModel(true));
                     for (NoticesModel noticesModel : noticesModelArrayList) {
@@ -195,7 +210,7 @@ public class DashboardActivity extends AppCompatActivity implements
         } else if (id == R.id.nav_co_workers) {
             openFragment(new CoWorkersFragment());
         } else if (id == R.id.nav_logout) {
-            Toast.makeText(this, "See you later " + sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_DISPLAY_NAME, ""), Toast.LENGTH_LONG).show();
+            helpers.showToast(getString(R.string.info_bye) + " " + sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_DISPLAY_NAME, ""));
             startActivity(new Intent(this, LoginActivity.class));
             finish();
             sharedPreferenceManager.clearPreference();
@@ -278,6 +293,8 @@ public class DashboardActivity extends AppCompatActivity implements
             }
         }
     }
+
+
 
     @Override
     public void onCancelled(DatabaseError databaseError) {
