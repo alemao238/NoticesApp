@@ -55,6 +55,7 @@ public class DashboardActivity extends AppCompatActivity implements
     private DatabaseReference database = FirebaseDatabase.getInstance().getReference();
     private ProgressDialog progressDialog;
     private SharedPreferenceManager sharedPreferenceManager;
+    private DatabaseReference adminNoticeReference;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.drawer_layout)
@@ -91,7 +92,7 @@ public class DashboardActivity extends AppCompatActivity implements
                 progressDialog.setCancelable(false);
                 progressDialog.setMessage(getString(R.string.loading_data));
                 progressDialog.show();
-                DatabaseReference adminNoticeReference = database.child("notices/admin");
+                adminNoticeReference = database.child("notices/admin");
                 adminNoticeReference.addValueEventListener(this);
             }
         }
@@ -130,7 +131,7 @@ public class DashboardActivity extends AppCompatActivity implements
                 BusProvider.getInstance().post(new RefreshModel(true));
                 int searchCount = 0;
                 for (NoticesModel noticesModel : noticesModelArrayList) {
-                    if (noticesModel.getTitle().equalsIgnoreCase(query)) {
+                    if (noticesModel.getTitle().contains(query)) {
                         BusProvider.getInstance().post(noticesModel);
                         searchCount++;
                     }
@@ -182,7 +183,8 @@ public class DashboardActivity extends AppCompatActivity implements
         int id = item.getItemId();
         if (id == R.id.nav_announcements) {
             openFragment(announcementsFragment);
-            DatabaseReference adminNoticeReference = database.child("notices/admin");
+            noticesModelArrayList = new ArrayList<>();
+            adminNoticeReference = database.child("notices/admin");
             adminNoticeReference.addValueEventListener(this);
         } else if (id == R.id.nav_profile) {
             openFragment(new ProfileFragment());
@@ -255,7 +257,7 @@ public class DashboardActivity extends AppCompatActivity implements
                         noticesModel.setUser(snapshot.getValue().toString());
                         break;
                     case "title":
-                        noticesModel.setTitle(snapshot.getValue().toString());
+                        noticesModel.setTitle(snapshot.getValue().toString().toLowerCase());
                         break;
                     case "short_message":
                         noticesModel.setShortMessage(snapshot.getValue().toString());
