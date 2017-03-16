@@ -29,7 +29,7 @@
             android:id="@+id/edittext_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_enter_username"
+            android:hint="@string/hint_enter_email"
             android:inputType="text" />
     </android.support.design.widget.TextInputLayout>
 

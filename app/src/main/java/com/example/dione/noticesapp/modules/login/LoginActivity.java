@@ -85,6 +85,7 @@ public class LoginActivity extends AppCompatActivity implements FirebaseAuth.Aut
                                                 Toast.LENGTH_SHORT).show();
 
                                     } else {
+                                        sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_UID, task.getResult().getUser().getUid());
                                         BusProvider.getInstance().post(new LoginRequestEvent(ApplicationConstants.KEY_USER_TYPE, username.getText().toString(), password.getText().toString()));
                                         helpers.showProgressDialog(getString(R.string.loading_login));
                                     }
@@ -138,7 +139,7 @@ public class LoginActivity extends AppCompatActivity implements FirebaseAuth.Aut
         Toast.makeText(LoginActivity.this,"Welcome " + loginResponseEvent.getDisplayName(),
                 Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
-        intent.putExtra("from_class", "login");
+        intent.putExtra(ApplicationConstants.KEY_BUNDLE_FROM_CLASS, "login");
         startActivity(intent);
         finish();
     }

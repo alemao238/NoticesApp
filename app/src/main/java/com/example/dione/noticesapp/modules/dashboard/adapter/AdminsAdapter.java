@@ -9,8 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.dione.noticesapp.R;
-import com.example.dione.noticesapp.modules.models.AdminsModel;
-import com.example.dione.noticesapp.utilities.ApplicationConstants;
+import com.example.dione.noticesapp.modules.models.AccountsModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -21,19 +20,19 @@ import java.util.ArrayList;
 
 public class AdminsAdapter extends BaseAdapter {
     private Context context;
-    private ArrayList<AdminsModel> adminsModels;
-    public AdminsAdapter(Context context, ArrayList<AdminsModel> adminsModels) {
-        this.adminsModels = adminsModels;
+    private ArrayList<AccountsModel> accountsModels;
+    public AdminsAdapter(Context context, ArrayList<AccountsModel> accountsModels) {
+        this.accountsModels = accountsModels;
         this.context = context;
     }
     @Override
     public int getCount() {
-        return adminsModels.size();
+        return accountsModels.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return adminsModels.get(position);
+        return accountsModels.get(position);
     }
 
     @Override
@@ -50,11 +49,13 @@ public class AdminsAdapter extends BaseAdapter {
         final ImageView imageView = (ImageView)convertView.findViewById(R.id.grid_item_image);
         final TextView textView = (TextView)convertView.findViewById(R.id.grid_item_name);
         Picasso.with(context)
-                .load(adminsModels.get(position).getImageUrl())
+                .load(accountsModels.get(position).getPhotoUrl())
+                .placeholder(R.drawable.progress_animation)
                 .resize(50, 50)
                 .centerCrop()
                 .into(imageView);
-        textView.setText(adminsModels.get(position).getName());
+        textView.setText(accountsModels.get(position).getDisplayName());
+
         return convertView;
     }
 }

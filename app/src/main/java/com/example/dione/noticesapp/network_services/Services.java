@@ -30,12 +30,12 @@ public class Services extends BaseService {
     public void onRegisterEvent(RegisterRequestEvent registerRequestEvent) {
         IUsers iUsers = NoticesClient.mRestAdapter.create(IUsers.class);
         Map<String, String> registerParams = new HashMap<>();
-        registerParams.put("email", registerRequestEvent.getEmail());
-        registerParams.put("name", registerRequestEvent.getNickname());
-        registerParams.put("password", registerRequestEvent.getPassword());
-        registerParams.put("username", registerRequestEvent.getUsername());
-        registerParams.put("type", ApplicationConstants.KEY_USER_TYPE);
-        registerParams.put("photo", registerRequestEvent.getPhotoUrl());
+        registerParams.put(ApplicationConstants.KEY_EMAIL, registerRequestEvent.getEmail());
+        registerParams.put(ApplicationConstants.KEY_NAME, registerRequestEvent.getNickname());
+        registerParams.put(ApplicationConstants.KEY_PASSWORD, registerRequestEvent.getPassword());
+        registerParams.put(ApplicationConstants.KEY_USERNAME, registerRequestEvent.getUsername());
+        registerParams.put(ApplicationConstants.KEY_TYPE, ApplicationConstants.KEY_USER_TYPE);
+        registerParams.put(ApplicationConstants.KEY_PHOTO, registerRequestEvent.getPhotoUrl());
         Call<RegisterResponseEvent> registerCall = iUsers.registerUser(registerParams);
         asyncRequest(registerCall);
     }
@@ -44,9 +44,9 @@ public class Services extends BaseService {
     public void onSendLoginEvent(LoginRequestEvent loginRequestEvent) {
         IUsers iUsers = NoticesClient.mRestAdapter.create(IUsers.class);
         Map<String, String> loginParams = new HashMap<>();
-        loginParams.put("type", loginRequestEvent.getType());
-        loginParams.put("username", loginRequestEvent.getUsername());
-        loginParams.put("password", loginRequestEvent.getPassword());
+        loginParams.put(ApplicationConstants.KEY_TYPE, loginRequestEvent.getType());
+        loginParams.put(ApplicationConstants.KEY_USERNAME, loginRequestEvent.getUsername());
+        loginParams.put(ApplicationConstants.KEY_PASSWORD, loginRequestEvent.getPassword());
 
         Call<LoginResponseEvent> loginCall = iUsers.loginUser(loginParams);
         asyncRequest(loginCall);
@@ -56,9 +56,10 @@ public class Services extends BaseService {
     public void onSendFcmToken(RegisterTokenRequestEvent registerTokenRequestEvent) {
         IUsers iUsers = NoticesClient.mRestAdapter.create(IUsers.class);
         Map<String, String> fcmParams = new HashMap<>();
-        fcmParams.put("type", registerTokenRequestEvent.getType());
-        fcmParams.put("username", registerTokenRequestEvent.getUsername());
-        fcmParams.put("token", registerTokenRequestEvent.getToken());
+        fcmParams.put(ApplicationConstants.KEY_TYPE, registerTokenRequestEvent.getType());
+        fcmParams.put(ApplicationConstants.KEY_USERNAME, registerTokenRequestEvent.getUsername());
+        fcmParams.put(ApplicationConstants.KEY_UID, registerTokenRequestEvent.getUid());
+        fcmParams.put(ApplicationConstants.KEY_TOKEN, registerTokenRequestEvent.getToken());
 
         Call<RegisterTokenResponseEvent> fcmRegisterCall = iUsers.registerToken(fcmParams);
         asyncRequest(fcmRegisterCall);

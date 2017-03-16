@@ -89,7 +89,7 @@ public class SignUpActivity extends AppCompatActivity implements FirebaseAuth.Au
     @Subscribe
     public void onReceiveRegisterResponse(RegisterResponseEvent registerResponseEvent) {
         helpers.showToast(getString(R.string.info_registration_success));
-        BusProvider.getInstance().post(new LoginRequestEvent(ApplicationConstants.KEY_USER_TYPE, username.getText().toString(), password.getText().toString()));
+        BusProvider.getInstance().post(new LoginRequestEvent(ApplicationConstants.KEY_USER_TYPE, email.getText().toString(), password.getText().toString()));
     }
 
     @Subscribe
@@ -142,13 +142,15 @@ public class SignUpActivity extends AppCompatActivity implements FirebaseAuth.Au
                         if (!task.isSuccessful()) {
                             helpers.showToast(task.getException().getMessage());
                         } else {
+
                             helpers.showToast("Welcome " + task.getResult().getUser().getDisplayName());
+                            sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_UID, task.getResult().getUser().getUid());
                             sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_DISPLAY_NAME, loginResponseEvent.getDisplayName());
                             sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_EMAIL, loginResponseEvent.getEmail());
                             sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_PHOTO_URL, "http://i1.wp.com/www.techrepublic.com/bundles/techrepubliccore/images/icons/standard/icon-user-default.png");
                             sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_USERNAME, loginResponseEvent.getUsername());
                             Intent intent = new Intent(SignUpActivity.this, DashboardActivity.class);
-                            intent.putExtra("from_class", "login");
+                            intent.putExtra(ApplicationConstants.KEY_BUNDLE_FROM_CLASS, "login");
                             startActivity(intent);
                             helpers.closeProgressDialog();
                             finish();

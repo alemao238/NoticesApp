@@ -8,10 +8,12 @@ public class RegisterTokenRequestEvent {
     private String token;
     private String username;
     private String type;
-    public RegisterTokenRequestEvent(String token, String username, String type) {
+    private String uid;
+    public RegisterTokenRequestEvent(String token, String username,String uid, String type) {
         this.token = token;
         this.username = username;
         this.type = type;
+        this.uid = uid;
     }
 
     public String getToken() {
@@ -24,5 +26,9 @@ public class RegisterTokenRequestEvent {
 
     public String getType() {
         return type;
+    }
+
+    public String getUid() {
+        return uid;
     }
 }

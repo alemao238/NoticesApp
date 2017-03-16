@@ -1,5 +1,6 @@
 package com.example.dione.noticesapp.modules.dashboard;
 
+import android.accounts.Account;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
@@ -32,6 +33,7 @@ import com.example.dione.noticesapp.firebase.InstanceService;
 import com.example.dione.noticesapp.firebase.MessagingService;
 import com.example.dione.noticesapp.manager.SharedPreferenceManager;
 import com.example.dione.noticesapp.modules.login.LoginActivity;
+import com.example.dione.noticesapp.modules.models.AccountsModel;
 import com.example.dione.noticesapp.modules.models.NoticesModel;
 import com.example.dione.noticesapp.modules.models.RefreshModel;
 import com.example.dione.noticesapp.utilities.ApplicationConstants;
@@ -55,12 +57,15 @@ public class DashboardActivity extends AppCompatActivity implements
     private boolean doubleBackToExitPressedOnce = false;
     private BroadcastReceiver noticesReceiver;
     private NoticesModel noticesModel;
+    private AccountsModel accountsModel;
     private AnnouncementsFragment announcementsFragment;
     private ArrayList<NoticesModel> noticesModelArrayList = new ArrayList<>();
+    private ArrayList<AccountsModel> adminsModelArrayList = new ArrayList<>();
     private DatabaseReference database = FirebaseDatabase.getInstance().getReference();
     private ProgressDialog progressDialog;
     private SharedPreferenceManager sharedPreferenceManager;
     private DatabaseReference adminNoticeReference;
+    private DatabaseReference adminAccountsReference;
     private Helpers helpers;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -87,25 +92,26 @@ public class DashboardActivity extends AppCompatActivity implements
         helpers = new Helpers(this);
         bindDrawer();
         selectMenu(0, announcementsFragment);
-        Log.d("REFRESHED_TOKEN", "SHOULD START SERVICE");
         startService(new Intent(this, InstanceService.class));
         startService(new Intent(this, MessagingService.class));
         if (!sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_REG_TOKEN, "").isEmpty()) {
-            Log.d("REFRESHED_TOKEN", sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_REG_TOKEN, ""));
             BusProvider.getInstance().post(new RegisterTokenRequestEvent(sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_REG_TOKEN, ""),
                     sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_USERNAME, ""),
+                    sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_UID, ""),
                     ApplicationConstants.KEY_USER_TYPE));
         }
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            if (bundle.getString("from_class").equalsIgnoreCase("login")) {
+            if (bundle.getString(ApplicationConstants.KEY_BUNDLE_FROM_CLASS).equalsIgnoreCase("login")) {
                 progressDialog = new ProgressDialog(this);
                 progressDialog.setCancelable(false);
                 progressDialog.setMessage(getString(R.string.loading_data));
                 progressDialog.show();
-                adminNoticeReference = database.child("notices/admin");
+                adminNoticeReference = database.child(ApplicationConstants.FIREBASE_ENDPOINT_NOTICES_ADMIN);
                 adminNoticeReference.addValueEventListener(this);
+                adminAccountsReference = database.child(ApplicationConstants.FIREBASE_ENDPOINT_ACCOUNTS_ADMIN);
+                adminAccountsReference.addValueEventListener(this);
             }
         }
         if (!sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_DISPLAY_NAME, "").isEmpty()) {
@@ -215,6 +221,9 @@ public class DashboardActivity extends AppCompatActivity implements
             openFragment(new SettingsFragment());
         } else if (id == R.id.nav_admins) {
             openFragment(new AdminsFragment());
+            adminsModelArrayList = new ArrayList<>();
+            adminAccountsReference = database.child("accounts/admin");
+            adminAccountsReference.addValueEventListener(this);
         } else if (id == R.id.nav_co_workers) {
             openFragment(new CoWorkersFragment());
         } else if (id == R.id.nav_logout) {
@@ -264,6 +273,17 @@ public class DashboardActivity extends AppCompatActivity implements
 
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
+        switch (dataSnapshot.getRef().getParent().getKey()) {
+            case "accounts":
+                accountDbHandler(dataSnapshot);
+                break;
+            case "notices":
+                noticesDbHandler(dataSnapshot);
+                break;
+        }
+    }
+
+    private void noticesDbHandler(DataSnapshot dataSnapshot) {
         int count = 0;
         BusProvider.getInstance().post(new RefreshModel(true));
         for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
@@ -294,6 +314,39 @@ public class DashboardActivity extends AppCompatActivity implements
                 Menu m = navigationView.getMenu();
                 MenuItem navAnnouncements = m.findItem(R.id.nav_announcements);
                 navAnnouncements.setTitle(getString(R.string.nav_announcements) + " - " + count);
+            }
+
+            if (progressDialog != null) {
+                if (progressDialog.isShowing()) progressDialog.dismiss();
+            }
+        }
+    }
+
+    private void accountDbHandler(DataSnapshot dataSnapshot) {
+        BusProvider.getInstance().post(new RefreshModel(true));
+        int count = 0;
+        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+            accountsModel = new AccountsModel();
+            count++;
+            for (DataSnapshot snapshot : postSnapshot.getChildren()) {
+                    switch (snapshot.getKey()) {
+                        case "display_name":
+                            accountsModel.setDisplayName(snapshot.getValue().toString());
+                            break;
+                        case "photoUrl":
+                            accountsModel.setPhotoUrl(snapshot.getValue().toString());
+                            break;
+                        case "uid":
+                            accountsModel.setUid(snapshot.getValue().toString());
+                            break;
+                    }
+            }
+            if (accountsModel != null) {
+                BusProvider.getInstance().post(accountsModel);
+                adminsModelArrayList.add(accountsModel);
+                Menu m = navigationView.getMenu();
+                MenuItem navAnnouncements = m.findItem(R.id.nav_admins);
+                navAnnouncements.setTitle(getString(R.string.nav_admins) + " - " + count);
             }
 
             if (progressDialog != null) {
