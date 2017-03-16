@@ -11,4 +11,5 @@ public class ApplicationConstants {
     public static String KEY_PHOTO_URL = "photo_url";
     public static String KEY_REG_TOKEN = "registration_token";
     public static String KEY_USERNAME = "username";
+    public static String KEY_USER_TYPE = "normal"; //normal or admin
 }

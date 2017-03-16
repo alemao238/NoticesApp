@@ -76,30 +76,20 @@ public class LoginActivity extends AppCompatActivity implements FirebaseAuth.Aut
                 boolean isUsernameValid = InputValidator.validate(this, username, tilUsername);
                 boolean isPasswordValid = InputValidator.validate(this, password, tilPassword);
                 if (isUsernameValid && isPasswordValid) {
-                    BusProvider.getInstance().post(new LoginRequestEvent("normal", username.getText().toString(), password.getText().toString()));
-                    helpers.showProgressDialog(getString(R.string.loading_login));
-//                    mAuth.signInWithEmailAndPassword(username.getText().toString().trim(), password.getText().toString().trim())
-//                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-//                                @Override
-//                                public void onComplete(@NonNull Task<AuthResult> task) {
-//                                    if (!task.isSuccessful()) {
-//                                        Toast.makeText(LoginActivity.this,task.getException().getMessage(),
-//                                                Toast.LENGTH_SHORT).show();
-//
-//                                    } else {
-//                                        Toast.makeText(LoginActivity.this,"Welcome " + task.getResult().getUser().getDisplayName(),
-//                                                Toast.LENGTH_SHORT).show();
-//                                        sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_DISPLAY_NAME, task.getResult().getUser().getDisplayName());
-//                                        sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_EMAIL, task.getResult().getUser().getEmail());
-//                                        sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_PHOTO_URL, task.getResult().getUser().getPhotoUrl().toString());
-//                                        Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
-//                                        intent.putExtra("from_class", "login");
-//                                        startActivity(intent);
-//                                        finish();
-//                                    }
-//                                    helpers.closeProgressDialog();
-//                                }
-//                            });
+                    mAuth.signInWithEmailAndPassword(username.getText().toString().trim(), password.getText().toString().trim())
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (!task.isSuccessful()) {
+                                        Toast.makeText(LoginActivity.this,task.getException().getMessage(),
+                                                Toast.LENGTH_SHORT).show();
+
+                                    } else {
+                                        BusProvider.getInstance().post(new LoginRequestEvent(ApplicationConstants.KEY_USER_TYPE, username.getText().toString(), password.getText().toString()));
+                                        helpers.showProgressDialog(getString(R.string.loading_login));
+                                    }
+                                }
+                            });
                 }
                 break;
             default:
@@ -145,7 +135,8 @@ public class LoginActivity extends AppCompatActivity implements FirebaseAuth.Aut
         sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_PHOTO_URL, "http://i1.wp.com/www.techrepublic.com/bundles/techrepubliccore/images/icons/standard/icon-user-default.png");
         sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_USERNAME, loginResponseEvent.getUsername());
         helpers.closeProgressDialog();
-        helpers.showToast(getString(R.string.info_login_success));
+        Toast.makeText(LoginActivity.this,"Welcome " + loginResponseEvent.getDisplayName(),
+                Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
         intent.putExtra("from_class", "login");
         startActivity(intent);

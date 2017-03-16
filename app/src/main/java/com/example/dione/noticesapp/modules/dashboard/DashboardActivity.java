@@ -91,9 +91,10 @@ public class DashboardActivity extends AppCompatActivity implements
         startService(new Intent(this, InstanceService.class));
         startService(new Intent(this, MessagingService.class));
         if (!sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_REG_TOKEN, "").isEmpty()) {
+            Log.d("REFRESHED_TOKEN", sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_REG_TOKEN, ""));
             BusProvider.getInstance().post(new RegisterTokenRequestEvent(sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_REG_TOKEN, ""),
                     sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_USERNAME, ""),
-                    "normal"));
+                    ApplicationConstants.KEY_USER_TYPE));
         }
 
         Bundle bundle = getIntent().getExtras();

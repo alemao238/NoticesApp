@@ -9,6 +9,7 @@ import com.example.dione.noticesapp.event.RegisterRequestEvent;
 import com.example.dione.noticesapp.event.RegisterResponseEvent;
 import com.example.dione.noticesapp.event.RegisterTokenRequestEvent;
 import com.example.dione.noticesapp.event.RegisterTokenResponseEvent;
+import com.example.dione.noticesapp.utilities.ApplicationConstants;
 import com.squareup.otto.Subscribe;
 
 import java.util.HashMap;
@@ -33,7 +34,7 @@ public class Services extends BaseService {
         registerParams.put("name", registerRequestEvent.getNickname());
         registerParams.put("password", registerRequestEvent.getPassword());
         registerParams.put("username", registerRequestEvent.getUsername());
-        registerParams.put("type", "normal");
+        registerParams.put("type", ApplicationConstants.KEY_USER_TYPE);
         registerParams.put("photo", registerRequestEvent.getPhotoUrl());
         Call<RegisterResponseEvent> registerCall = iUsers.registerUser(registerParams);
         asyncRequest(registerCall);
