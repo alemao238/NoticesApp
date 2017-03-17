@@ -18,10 +18,6 @@
                 android:id="@+id/nav_admins"
                 android:icon="@mipmap/ic_supervisor_account_black_24dp"
                 android:title="@string/nav_admins" />
-            <item
-                android:id="@+id/nav_co_workers"
-                android:icon="@mipmap/ic_wb_incandescent_black_24dp"
-                android:title="@string/nav_co_workers" />
         </menu>
     </item>
 

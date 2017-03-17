@@ -1,6 +1,5 @@
 package com.example.dione.noticesapp.modules.dashboard;
 
-import android.accounts.Account;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
@@ -55,12 +54,14 @@ import butterknife.ButterKnife;
 public class DashboardActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener, ValueEventListener {
     private boolean doubleBackToExitPressedOnce = false;
+    private boolean isFirstLoad = true;
     private BroadcastReceiver noticesReceiver;
     private NoticesModel noticesModel;
     private AccountsModel accountsModel;
     private AnnouncementsFragment announcementsFragment;
     private ArrayList<NoticesModel> noticesModelArrayList = new ArrayList<>();
     private ArrayList<AccountsModel> adminsModelArrayList = new ArrayList<>();
+    private ArrayList<AccountsModel> normalModelArrayList = new ArrayList<>();
     private DatabaseReference database = FirebaseDatabase.getInstance().getReference();
     private ProgressDialog progressDialog;
     private SharedPreferenceManager sharedPreferenceManager;
@@ -99,19 +100,13 @@ public class DashboardActivity extends AppCompatActivity implements
                     sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_USERNAME, ""),
                     sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_UID, ""),
                     ApplicationConstants.KEY_USER_TYPE));
+            isFirstLoad = false;
         }
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             if (bundle.getString(ApplicationConstants.KEY_BUNDLE_FROM_CLASS).equalsIgnoreCase("login")) {
-                progressDialog = new ProgressDialog(this);
-                progressDialog.setCancelable(false);
-                progressDialog.setMessage(getString(R.string.loading_data));
-                progressDialog.show();
-                adminNoticeReference = database.child(ApplicationConstants.FIREBASE_ENDPOINT_NOTICES_ADMIN);
-                adminNoticeReference.addValueEventListener(this);
-                adminAccountsReference = database.child(ApplicationConstants.FIREBASE_ENDPOINT_ACCOUNTS_ADMIN);
-                adminAccountsReference.addValueEventListener(this);
+                initialize();
             }
         }
         if (!sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_DISPLAY_NAME, "").isEmpty()) {
@@ -125,6 +120,17 @@ public class DashboardActivity extends AppCompatActivity implements
         }
 //        initNoticeReceiver();
 //        FirebaseMessaging.getInstance().subscribeToTopic("news");
+    }
+
+    private void initialize() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage(getString(R.string.loading_data));
+        progressDialog.show();
+        adminNoticeReference = database.child(ApplicationConstants.FIREBASE_ENDPOINT_NOTICES_ADMIN);
+        adminNoticeReference.addValueEventListener(this);
+        adminAccountsReference = database.child(ApplicationConstants.FIREBASE_ENDPOINT_ACCOUNTS);
+        adminAccountsReference.addValueEventListener(this);
     }
 
     @Override
@@ -213,7 +219,7 @@ public class DashboardActivity extends AppCompatActivity implements
         if (id == R.id.nav_announcements) {
             openFragment(announcementsFragment);
             noticesModelArrayList = new ArrayList<>();
-            adminNoticeReference = database.child("notices/admin");
+            adminNoticeReference = database.child(ApplicationConstants.FIREBASE_ENDPOINT_NOTICES_ADMIN);
             adminNoticeReference.addValueEventListener(this);
         } else if (id == R.id.nav_profile) {
             openFragment(new ProfileFragment());
@@ -222,10 +228,8 @@ public class DashboardActivity extends AppCompatActivity implements
         } else if (id == R.id.nav_admins) {
             openFragment(new AdminsFragment());
             adminsModelArrayList = new ArrayList<>();
-            adminAccountsReference = database.child("accounts/admin");
+            adminAccountsReference = database.child(ApplicationConstants.FIREBASE_ENDPOINT_ACCOUNTS);
             adminAccountsReference.addValueEventListener(this);
-        } else if (id == R.id.nav_co_workers) {
-            openFragment(new CoWorkersFragment());
         } else if (id == R.id.nav_logout) {
             helpers.showToast(getString(R.string.info_bye) + " " + sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_DISPLAY_NAME, ""));
             startActivity(new Intent(this, LoginActivity.class));
@@ -273,7 +277,7 @@ public class DashboardActivity extends AppCompatActivity implements
 
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
-        switch (dataSnapshot.getRef().getParent().getKey()) {
+        switch (dataSnapshot.getKey()) {
             case "accounts":
                 accountDbHandler(dataSnapshot);
                 break;
@@ -286,49 +290,57 @@ public class DashboardActivity extends AppCompatActivity implements
     private void noticesDbHandler(DataSnapshot dataSnapshot) {
         int count = 0;
         BusProvider.getInstance().post(new RefreshModel(true));
+
         for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-            noticesModel = new NoticesModel();
             for (DataSnapshot snapshot : postSnapshot.getChildren()) {
-                switch (snapshot.getKey()) {
-                    case "date":
-                        noticesModel.setDate(snapshot.getValue().toString());
-                        break;
-                    case "message":
-                        noticesModel.setMessage(snapshot.getValue().toString());
-                        break;
-                    case "user":
-                        noticesModel.setUser(snapshot.getValue().toString());
-                        break;
-                    case "title":
-                        noticesModel.setTitle(snapshot.getValue().toString().toLowerCase());
-                        break;
-                    case "short_message":
-                        noticesModel.setShortMessage(snapshot.getValue().toString());
-                        break;
+                noticesModel = new NoticesModel();
+                for (DataSnapshot snapsho2 : snapshot.getChildren()){
+                    switch (snapsho2.getKey()) {
+                        case "date":
+                            noticesModel.setDate(snapsho2.getValue().toString());
+                            break;
+                        case "message":
+                            noticesModel.setMessage(snapsho2.getValue().toString());
+                            break;
+                        case "user":
+                            noticesModel.setUser(snapsho2.getValue().toString());
+                            break;
+                        case "title":
+                            noticesModel.setTitle(snapsho2.getValue().toString().toLowerCase());
+                            break;
+                        case "short_message":
+                            noticesModel.setShortMessage(snapsho2.getValue().toString());
+                            break;
+                    }
                 }
-            }
-            count++;
-            if (noticesModel != null) {
-                BusProvider.getInstance().post(noticesModel);
-                noticesModelArrayList.add(noticesModel);
-                Menu m = navigationView.getMenu();
-                MenuItem navAnnouncements = m.findItem(R.id.nav_announcements);
-                navAnnouncements.setTitle(getString(R.string.nav_announcements) + " - " + count);
+                count++;
+                if (noticesModel != null) {
+                    BusProvider.getInstance().post(noticesModel);
+                    noticesModelArrayList.add(noticesModel);
+                    Menu m = navigationView.getMenu();
+                    MenuItem navAnnouncements = m.findItem(R.id.nav_announcements);
+                    navAnnouncements.setTitle(getString(R.string.nav_announcements) + " - " + count);
+                }
+
             }
 
-            if (progressDialog != null) {
-                if (progressDialog.isShowing()) progressDialog.dismiss();
-            }
+
+
+        }
+        if (progressDialog != null) {
+            if (progressDialog.isShowing()) progressDialog.dismiss();
         }
     }
 
     private void accountDbHandler(DataSnapshot dataSnapshot) {
         BusProvider.getInstance().post(new RefreshModel(true));
         int count = 0;
+
         for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-            accountsModel = new AccountsModel();
-            count++;
-            for (DataSnapshot snapshot : postSnapshot.getChildren()) {
+            for (DataSnapshot dataSnapshot1 : postSnapshot.getChildren()) {
+                accountsModel = new AccountsModel();
+                count++;
+                for (DataSnapshot snapshot : dataSnapshot1.getChildren()) {
                     switch (snapshot.getKey()) {
                         case "display_name":
                             accountsModel.setDisplayName(snapshot.getValue().toString());
@@ -339,23 +351,27 @@ public class DashboardActivity extends AppCompatActivity implements
                         case "uid":
                             accountsModel.setUid(snapshot.getValue().toString());
                             break;
+                        case "username":
+                            accountsModel.setUsername(snapshot.getValue().toString());
+                            break;
                     }
-            }
-            if (accountsModel != null) {
-                BusProvider.getInstance().post(accountsModel);
-                adminsModelArrayList.add(accountsModel);
-                Menu m = navigationView.getMenu();
-                MenuItem navAnnouncements = m.findItem(R.id.nav_admins);
-                navAnnouncements.setTitle(getString(R.string.nav_admins) + " - " + count);
+                }
+                if (accountsModel != null) {
+                    BusProvider.getInstance().post(accountsModel);
+                    adminsModelArrayList.add(accountsModel);
+                    Menu m = navigationView.getMenu();
+                    MenuItem navAnnouncements = m.findItem(R.id.nav_admins);
+                    navAnnouncements.setTitle(getString(R.string.nav_admins) + " - " + count);
+                }
             }
 
-            if (progressDialog != null) {
-                if (progressDialog.isShowing()) progressDialog.dismiss();
-            }
+
+
+        }
+        if (progressDialog != null) {
+            if (progressDialog.isShowing()) progressDialog.dismiss();
         }
     }
-
-
 
     @Override
     public void onCancelled(DatabaseError databaseError) {
@@ -372,6 +388,11 @@ public class DashboardActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         BusProvider.getInstance().register(this);
+        adminNoticeReference = database.child(ApplicationConstants.FIREBASE_ENDPOINT_NOTICES_ADMIN);
+        adminNoticeReference.addValueEventListener(this);
+        adminAccountsReference = database.child(ApplicationConstants.FIREBASE_ENDPOINT_ACCOUNTS);
+        adminAccountsReference.addValueEventListener(this);
+
     }
 
     @Subscribe

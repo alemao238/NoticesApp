@@ -6,8 +6,9 @@ package com.example.dione.noticesapp.utilities;
 
 public class ApplicationConstants {
     public static String API_BASE_URL = "http://192.168.1.70:8080/";
-    public static String FIREBASE_ENDPOINT_ACCOUNTS_ADMIN = "accounts/admin";
-    public static String FIREBASE_ENDPOINT_NOTICES_ADMIN = "notices/admin";
+    public static String FIREBASE_ENDPOINT_ACCOUNTS = "accounts";
+    public static String FIREBASE_ENDPOINT_NOTICES_ADMIN = "notices";
+    public static String FIREBASE_ENDPOINT_CHATS = "chats/";
     public static String KEY_DISPLAY_NAME = "display_name";
     public static String KEY_NAME = "name";
     public static String KEY_EMAIL = "email";
@@ -20,5 +21,6 @@ public class ApplicationConstants {
     public static String KEY_UID = "uid";
     public static String KEY_TOKEN = "token";
     public static String KEY_TYPE = "type";
+    public static String KEY_CHATMATE = "chatmate";
     public static String KEY_BUNDLE_FROM_CLASS = "from_class";
 }

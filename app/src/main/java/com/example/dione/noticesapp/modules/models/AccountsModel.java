@@ -8,12 +8,22 @@ public class AccountsModel {
     private String displayName;
     private String photoUrl;
     private String uid;
+    private String username;
     public AccountsModel() {
     }
-    public AccountsModel(String displayName, String photoUrl, String uid) {
+    public AccountsModel(String displayName, String photoUrl, String uid, String username) {
         this.displayName = displayName;
         this.photoUrl = photoUrl;
         this.uid = uid;
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getDisplayName() {

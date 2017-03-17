@@ -85,6 +85,8 @@ public class LoginActivity extends AppCompatActivity implements FirebaseAuth.Aut
                                                 Toast.LENGTH_SHORT).show();
 
                                     } else {
+                                        Log.d("MY_UID", task.getResult().getUser().getUid());
+                                        Log.d("MY_UID", task.getResult().getUser().getDisplayName());
                                         sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_UID, task.getResult().getUser().getUid());
                                         BusProvider.getInstance().post(new LoginRequestEvent(ApplicationConstants.KEY_USER_TYPE, username.getText().toString(), password.getText().toString()));
                                         helpers.showProgressDialog(getString(R.string.loading_login));
@@ -135,6 +137,7 @@ public class LoginActivity extends AppCompatActivity implements FirebaseAuth.Aut
         sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_EMAIL, loginResponseEvent.getEmail());
         sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_PHOTO_URL, "http://i1.wp.com/www.techrepublic.com/bundles/techrepubliccore/images/icons/standard/icon-user-default.png");
         sharedPreferenceManager.saveStringPreference(ApplicationConstants.KEY_USERNAME, loginResponseEvent.getUsername());
+        Log.d("DSDASDSA", loginResponseEvent.getUsername());
         helpers.closeProgressDialog();
         Toast.makeText(LoginActivity.this,"Welcome " + loginResponseEvent.getDisplayName(),
                 Toast.LENGTH_SHORT).show();
