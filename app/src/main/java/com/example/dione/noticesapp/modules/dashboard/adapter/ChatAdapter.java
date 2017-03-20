@@ -1,4 +1,4 @@
-package com.example.dione.noticesapp.modules.chats.adapter;
+package com.example.dione.noticesapp.modules.dashboard.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +20,7 @@ import java.util.ArrayList;
  */
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> {
+    private Context context;
     private ArrayList<ChatModel> chatModelArrayList;
     private SharedPreferenceManager sharedPreferenceManager;
     public ChatAdapter(ArrayList<ChatModel> chatModelArrayList, Context context) {
@@ -30,17 +31,18 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView message;
         private TextView time;
+        private TextView name;
 
         public MyViewHolder(View view) {
             super(view);
             message = (TextView) view.findViewById(R.id.listitem_message);
             time = (TextView) view.findViewById(R.id.listitem_time);
+            name = (TextView) view.findViewById(R.id.listitem_name);
         }
     }
     @Override
     public ChatAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView;
-        Log.d("VIEWTYPE", String.valueOf(viewType));
         itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_chat, parent, false);
         if (viewType == 0) {
@@ -54,7 +56,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     @Override
     public void onBindViewHolder(ChatAdapter.MyViewHolder holder, int position) {
         holder.message.setText(chatModelArrayList.get(position).getMessage());
-        holder.time.setText(chatModelArrayList.get(position).getLocTime());
+        holder.time.setText(chatModelArrayList.get(position).getLocTime().split("\\.")[0]);
+        if (getItemViewType(position) == 0) {
+            holder.name.setText(sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_USERNAME, ""));
+        } else {
+            holder.name.setText(chatModelArrayList.get(position).getFrom());
+        }
 
     }
 

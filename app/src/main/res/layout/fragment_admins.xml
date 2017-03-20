@@ -1,18 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
-    <GridView
-        android:padding="@dimen/list_padding"
-        android:id="@+id/grid_admins"
+    tools:context="com.example.dione.noticesapp.modules.chats.ChatActivity">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerview_chats"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:columnWidth="100dp"
-        android:numColumns="auto_fit"
-        android:verticalSpacing="24dp"
-        android:horizontalSpacing="10dp"
-        android:stretchMode="spacingWidthUniform"
-        />
-</LinearLayout>
+        android:layout_marginBottom="45dp"
+        android:scrollbars="vertical"/>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/til_message"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/edittext_message"
+            android:maxLines="1"
+            android:padding="@dimen/input_padding"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="35dp"
+            android:hint="Enter message"
+            android:background="@null"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <ImageView
+        android:id="@+id/button_send"
+        android:layout_margin="10dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/ic_mode_edit_black_24dp"/>
+
+</RelativeLayout>

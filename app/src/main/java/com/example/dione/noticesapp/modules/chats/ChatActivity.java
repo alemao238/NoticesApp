@@ -1,8 +1,6 @@
 package com.example.dione.noticesapp.modules.chats;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,7 +12,8 @@ import android.widget.ImageView;
 
 import com.example.dione.noticesapp.R;
 import com.example.dione.noticesapp.manager.SharedPreferenceManager;
-import com.example.dione.noticesapp.modules.chats.adapter.ChatAdapter;
+import com.example.dione.noticesapp.modules.dashboard.adapter.ChatAdapter;
+import com.example.dione.noticesapp.modules.dashboard.adapter.DividerItemDecoration;
 import com.example.dione.noticesapp.modules.models.ChatModel;
 import com.example.dione.noticesapp.utilities.ApplicationConstants;
 import com.example.dione.noticesapp.utilities.Helpers;
@@ -25,7 +24,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
 

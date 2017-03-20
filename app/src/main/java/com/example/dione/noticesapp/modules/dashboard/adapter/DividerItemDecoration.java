@@ -1,4 +1,4 @@
-package com.example.dione.noticesapp.modules.chats;
+package com.example.dione.noticesapp.modules.dashboard.adapter;
 
 /**
  * Created by Donds on 3/17/2017.

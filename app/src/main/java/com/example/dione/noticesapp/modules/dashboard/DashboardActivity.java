@@ -33,6 +33,7 @@ import com.example.dione.noticesapp.firebase.MessagingService;
 import com.example.dione.noticesapp.manager.SharedPreferenceManager;
 import com.example.dione.noticesapp.modules.login.LoginActivity;
 import com.example.dione.noticesapp.modules.models.AccountsModel;
+import com.example.dione.noticesapp.modules.models.ChatModel;
 import com.example.dione.noticesapp.modules.models.NoticesModel;
 import com.example.dione.noticesapp.modules.models.RefreshModel;
 import com.example.dione.noticesapp.utilities.ApplicationConstants;
@@ -46,10 +47,14 @@ import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
 
+import org.joda.time.LocalDate;
+
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.google.android.gms.internal.zzs.TAG;
 
 public class DashboardActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener, ValueEventListener {
@@ -66,7 +71,7 @@ public class DashboardActivity extends AppCompatActivity implements
     private ProgressDialog progressDialog;
     private SharedPreferenceManager sharedPreferenceManager;
     private DatabaseReference adminNoticeReference;
-    private DatabaseReference adminAccountsReference;
+    private DatabaseReference chatsReference;
     private Helpers helpers;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -77,6 +82,7 @@ public class DashboardActivity extends AppCompatActivity implements
     TextView navHeaderName;
     TextView navHeaderEmail;
     ImageView navHeaderImage;
+    private LocalDate localDate = new LocalDate();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,8 +135,8 @@ public class DashboardActivity extends AppCompatActivity implements
         progressDialog.show();
         adminNoticeReference = database.child(ApplicationConstants.FIREBASE_ENDPOINT_NOTICES_ADMIN);
         adminNoticeReference.addValueEventListener(this);
-        adminAccountsReference = database.child(ApplicationConstants.FIREBASE_ENDPOINT_ACCOUNTS);
-        adminAccountsReference.addValueEventListener(this);
+        chatsReference = database.child(ApplicationConstants.FIREBASE_ENDPOINT_CHATS + localDate.toString());
+        chatsReference.addValueEventListener(this);
     }
 
     @Override
@@ -228,8 +234,8 @@ public class DashboardActivity extends AppCompatActivity implements
         } else if (id == R.id.nav_admins) {
             openFragment(new AdminsFragment());
             adminsModelArrayList = new ArrayList<>();
-            adminAccountsReference = database.child(ApplicationConstants.FIREBASE_ENDPOINT_ACCOUNTS);
-            adminAccountsReference.addValueEventListener(this);
+            chatsReference = database.child(ApplicationConstants.FIREBASE_ENDPOINT_CHATS + localDate.toString());
+            chatsReference.addValueEventListener(this);
         } else if (id == R.id.nav_logout) {
             helpers.showToast(getString(R.string.info_bye) + " " + sharedPreferenceManager.getStringPreference(ApplicationConstants.KEY_DISPLAY_NAME, ""));
             startActivity(new Intent(this, LoginActivity.class));
@@ -277,13 +283,11 @@ public class DashboardActivity extends AppCompatActivity implements
 
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
-        switch (dataSnapshot.getKey()) {
-            case "accounts":
-                accountDbHandler(dataSnapshot);
-                break;
-            case "notices":
-                noticesDbHandler(dataSnapshot);
-                break;
+        Log.d("SNAPSHOT", dataSnapshot.getKey());
+        if (dataSnapshot.getKey().equals("notices")) {
+            noticesDbHandler(dataSnapshot);
+        } else {
+            chatsDbHandler(dataSnapshot);
         }
     }
 
@@ -332,46 +336,29 @@ public class DashboardActivity extends AppCompatActivity implements
         }
     }
 
-    private void accountDbHandler(DataSnapshot dataSnapshot) {
+    private void chatsDbHandler(DataSnapshot dataSnapshot) {
         BusProvider.getInstance().post(new RefreshModel(true));
-        int count = 0;
+        ChatModel chatModel = null;
 
-        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-            for (DataSnapshot dataSnapshot1 : postSnapshot.getChildren()) {
-                accountsModel = new AccountsModel();
-                count++;
-                for (DataSnapshot snapshot : dataSnapshot1.getChildren()) {
-                    switch (snapshot.getKey()) {
-                        case "display_name":
-                            accountsModel.setDisplayName(snapshot.getValue().toString());
-                            break;
-                        case "photoUrl":
-                            accountsModel.setPhotoUrl(snapshot.getValue().toString());
-                            break;
-                        case "uid":
-                            accountsModel.setUid(snapshot.getValue().toString());
-                            break;
-                        case "username":
-                            accountsModel.setUsername(snapshot.getValue().toString());
-                            break;
-                    }
-                }
-                if (accountsModel != null) {
-                    BusProvider.getInstance().post(accountsModel);
-                    adminsModelArrayList.add(accountsModel);
-                    Menu m = navigationView.getMenu();
-                    MenuItem navAnnouncements = m.findItem(R.id.nav_admins);
-                    navAnnouncements.setTitle(getString(R.string.nav_admins) + " - " + count);
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+            chatModel = new ChatModel();
+            for (DataSnapshot ds1 : ds.getChildren()) {
+                switch (ds1.getKey()) {
+                    case "from":
+                        chatModel.setFrom(ds1.getValue().toString());
+                        break;
+                    case "locTime":
+                        chatModel.setLocTime(ds1.getValue().toString());
+                        break;
+                    case "message":
+                        chatModel.setMessage(ds1.getValue().toString());
+                        break;
                 }
             }
-
-
-
-        }
-        if (progressDialog != null) {
-            if (progressDialog.isShowing()) progressDialog.dismiss();
+            BusProvider.getInstance().post(chatModel);
         }
     }
+
 
     @Override
     public void onCancelled(DatabaseError databaseError) {
@@ -390,8 +377,8 @@ public class DashboardActivity extends AppCompatActivity implements
         BusProvider.getInstance().register(this);
         adminNoticeReference = database.child(ApplicationConstants.FIREBASE_ENDPOINT_NOTICES_ADMIN);
         adminNoticeReference.addValueEventListener(this);
-        adminAccountsReference = database.child(ApplicationConstants.FIREBASE_ENDPOINT_ACCOUNTS);
-        adminAccountsReference.addValueEventListener(this);
+        chatsReference = database.child(ApplicationConstants.FIREBASE_ENDPOINT_CHATS + localDate.toString());
+        chatsReference.addValueEventListener(this);
 
     }
 
